@@ -1984,8 +1984,10 @@ extern void cvc_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
 extern void smt_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
 #endif
 
-int smt_scan_string(const char* yy_str);
-int cvc_scan_string(const char* yy_str);
+struct yy_buffer_state;
+typedef struct yy_buffer_state* YY_BUFFER_STATE;
+YY_BUFFER_STATE smt_scan_string(const char* yy_str);
+YY_BUFFER_STATE cvc_scan_string(const char* yy_str);
 
 int vc_parseMemExpr(VC vc, const char* s, Expr* oquery, Expr* oasserts)
 {
