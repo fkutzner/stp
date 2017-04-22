@@ -1,4 +1,6 @@
-# AUTHORS: Dan Liew, Ryan Gvostes, Mate Soos
+# AUTHORS: Dan Liew
+#
+# BEGIN DATE: May, 2014
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -15,20 +17,16 @@
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
+# OUT OF OR IN CONNECT
 
-set(PYTHON_INTERFACE_DIR ${PROJECT_BINARY_DIR}/bindings/python)
-configure_file(tests.py.in tests.py.in.g @ONLY)
-file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/tests.py
-              INPUT  ${CMAKE_CURRENT_BINARY_DIR}/tests.py.in.g)
+# This file wraps CMake invocation for TravisCI
+# so we can set different configurations via environment variables.
+#
+# We could modify our CMake scripts to read environment variables directly but
+# that would create two ways of setting the same thing which doesn't seem like
+# a good idea.
 
-add_custom_target(python-interface-tests
-                  DEPENDS libstp
-                  COMMAND ${PYTHON_EXECUTABLE}
-                          ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/tests.py
-                  COMMENT "Running Python interface tests"
-                 )
-
-# Make sure this test-suite runs when "check" is target
-add_dependencies(check python-interface-tests)
+# Search paths for the stp shared library
+PATHS = [
+    '@LIBSTP_PATH@/@CMAKE_SHARED_LIBRARY_PREFIX@@LIBSTP_FILENAME@@CMAKE_SHARED_LIBRARY_SUFFIX@',
+]
