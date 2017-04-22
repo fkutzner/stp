@@ -52,7 +52,7 @@ set(LIT_ARGS -v -s CACHE STRING "Arguments to pass to lit")
 # so ``find_package(GTest REQUIRED)`` fails.
 #
 # Instead it is recommended that projects build their own copy of GTest. Detecting
-# the location of GTest source code is probably error prone so using a copy in the 
+# the location of GTest source code is probably error prone so using a copy in the
 # repository seems like the easiest thing to do. This also has the added benefit that
 # everyone uses the same version of GTest.
 set(GTEST_PREFIX ${PROJECT_SOURCE_DIR}/utils/gtest)
@@ -60,6 +60,11 @@ if (NOT EXISTS "${GTEST_PREFIX}/CMakeLists.txt")
     message(FATAL_ERROR "Could not find GTest. Did you remember to add the submodules (``git submodule init && git submodule update``)?")
 endif()
 
+if (MSVC)
+  # STP is built with the shared version of the CRT, gtest defaults to the
+  # static one, and they can't be mixed. Foring gtest to use the dynamic one.
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+endif()
 
 add_subdirectory(${GTEST_PREFIX} gtest)
 set(GTEST_BOTH_LIBRARIES gtest gtest_main)
@@ -100,7 +105,7 @@ endif()
 # -----------------------------------------------------------------------------
 
 option(TEST_QUERY_FILES
-       "Enable tests that use query files to drive STP" 
+       "Enable tests that use query files to drive STP"
        ON
       )
 
@@ -114,7 +119,7 @@ endif()
 
 # FIXME: Enable by default
 option(TEST_APIS
-       "Enable tests that test STP's public APIs" 
+       "Enable tests that test STP's public APIs"
        ON
       )
 

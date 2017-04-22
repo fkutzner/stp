@@ -21,8 +21,11 @@
 # -----------------------------------------------------------------------------
 # Setup python module in build directory
 # -----------------------------------------------------------------------------
-get_target_property(LIBSTP_PATH libstp LOCATION)
-configure_file(library_path.py.in library_path.py @ONLY)
+
+# The binary path isn't known until the build process starts
+# (e.g. when building with MSBuild), so generate the file lately.
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/library_path.py
+              INPUT ${CMAKE_CURRENT_SOURCE_DIR}/library_path.py.in)
 
 # Copy rest of files to build directory
 configure_file(stp.py stp.py COPYONLY)
@@ -56,13 +59,6 @@ endif()
 
 # Install main files
 install(FILES stp.py __init__.py DESTINATION "${PYTHON_LIB_INSTALL_DIR}/stp")
-
-# Generate and install file describing install location of stp shared library
-get_target_property(LIBSTP_LOCATAION libstp LOCATION) # This the full path in the build directory
-get_filename_component(LIBSTP_FILENAME "${LIBSTP_LOCATAION}" NAME)
-set(LIBSTP_PATH ${CMAKE_INSTALL_PREFIX}/lib/${LIBSTP_FILENAME}) # FIXME: This is also set in libstp/CMakeLists.txt which could be fragile
-
-configure_file(library_path.py.in "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/library_path.py" @ONLY)
 install(FILES "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/library_path.py"
         DESTINATION "${PYTHON_LIB_INSTALL_DIR}/stp"
        )

@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 project(STP)
-cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
 
 
 if(NOT (CMAKE_MAJOR_VERSION LESS 2))
@@ -123,17 +123,20 @@ endif()
 # -----------------------------------------------------------------------------
 option(BUILD_SHARED_LIBS "Build client library as a shared library" ON)
 
-if (WIN32)
-  # building of shared lib on windows is not done at source level
-  set(BUILD_SHARED_LIBS OFF)
-  message(WARNING "Disabling building of shared library on Windows")
+if (MSVC AND BUILD_SHARED_LIBS)
+  # need version 3.7 due to a bug in CMake WINDOWS_EXPORT_ALL_SYMBOLS
+  # handling of object libraries
+  cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON CACHE BOOL "" FORCE)
 endif()
 
 if (BUILD_SHARED_LIBS)
   set(STP_SHARED_LIBRARY libstp) # Used for exporting target
 else()
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive -static ")
-  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+  if (NOT MSVC)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive -static ")
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+  endif()
   set(STP_STATIC_LIBRARY libstp) # Used for exporting target
 endif()
 
@@ -223,10 +226,11 @@ if(WIN32)
 
       # stack size of MSVC must be specified
       string(REGEX REPLACE "/STACK:[0-9]+" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:256000000")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:512000000")
 
       # inline is not a keyword in visual studios old C version, allow its redefinition
       add_definitions("-D_ALLOW_KEYWORD_MACROS")
+      add_definitions("/W3")
   endif()
   add_definitions(${STP_DEFS_COMM})
 endif()
