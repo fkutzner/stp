@@ -26,11 +26,24 @@ THE SOFTWARE.
 #define ATTRIBUTES_H_
 
 #if defined(_MSC_VER)
-#define ATTR_NORETURN _declspec(noreturn)
+#define ATTR_NORETURN __declspec(noreturn)
 #elif defined(__GNUC__) || defined(__clang__)
 #define ATTR_NORETURN __attribute__((noreturn))
 #else
 #define ATTR_NORETURN
+#endif
+
+#if defined(_MSC_VER)
+
+#if defined(STP_EXPORTS)
+#define ATTR_STPAPI __declspec(dllexport)
+#else // defined(STP_EXPORTS)
+#define ATTR_STPAPI __declspec(dllimport)
+#endif // defined(STP_EXPORTS)
+
+#else
+#define ATTR_STPAPI
+#endif
 #endif
 
 #endif
