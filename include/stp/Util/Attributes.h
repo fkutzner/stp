@@ -44,6 +44,5 @@ THE SOFTWARE.
 #else
 #define ATTR_STPAPI
 #endif
-#endif
 
 #endif

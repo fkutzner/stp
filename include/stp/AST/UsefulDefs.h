@@ -42,6 +42,7 @@ THE SOFTWARE.
 #include "extlib-constbv/constantbv.h"
 #include "stp/Util/RunTimes.h"
 #include "stp/Util/StringHash.h"
+#include "stp/Util/Attributes.h"
 
 #include "stp/config.h"
 
@@ -74,10 +75,11 @@ class BVSolver;
  ******************************************************************/
 typedef vector<ASTNode> ASTVec;
 typedef unsigned int* CBV;
-extern ASTVec _empty_ASTVec;
+extern ATTR_STPAPI ASTVec _empty_ASTVec;
 
 // Error handling function
 extern void (*vc_error_hdlr)(const char* err_msg);
+
 
 /******************************************************************
  * Class Spacer:

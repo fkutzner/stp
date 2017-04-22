@@ -49,4 +49,33 @@ void (*vc_error_hdlr)(const char* err_msg) = 0;
 // This is reusable empty vector, for representing empty children
 // arrays
 ASTVec _empty_ASTVec;
+
+void setGlobalSTP(STP* globalSTP_) {
+  GlobalSTP = globalSTP_;
+}
+
+STP* getGlobalSTP() {
+  return GlobalSTP;
+}
+
+void setGlobalParserBM(STPMgr* globalParserBM_) {
+  GlobalParserBM = globalParserBM_;
+}
+
+STPMgr* getGlobalParserBM() {
+  return GlobalParserBM;
+}
+
+void setGlobalParserInterface(Cpp_interface* globalParserInterface_) {
+  GlobalParserInterface = globalParserInterface_;
+}
+
+Cpp_interface* getGlobalParserInterface() {
+  return GlobalParserInterface;
+}
+
+void setVcErrorHdlr(void (*vc_error_hdlr_)(const char*)) {
+  vc_error_hdlr = vc_error_hdlr_;
+}
+
 }
