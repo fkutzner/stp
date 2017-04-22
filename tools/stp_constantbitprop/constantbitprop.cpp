@@ -24,6 +24,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "stp/Simplifier/constantBitP/ConstantBitPropagation.h"
 #include "stp/AST/AST.h"
 #include "stp/Printer/printers.h"
+#include "stp/Utils/Attributes.h"
 
 #include "stp/STPManager/STPManager.h"
 #include "stp/ToSat/AIG/ToSATAIG.h"
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 {
   extern int smt2parse();
   extern int smt2lex_destroy(void);
-  extern FILE* smt2in;
+  extern ATTR_STPAPI FILE* smt2in;
 
   STPMgr stp;
   STPMgr* mgr = &stp;
@@ -46,17 +47,17 @@ int main(int argc, char** argv)
   Cpp_interface interface(*mgr, mgr->defaultNodeFactory);
   interface.startup();
   interface.ignoreCheckSat();
-  stp::GlobalParserInterface = &interface;
+  setGlobalParserInterface(&interface);
 
   Simplifier* simp = new Simplifier(mgr);
   ArrayTransformer* at = new ArrayTransformer(mgr, simp);
   AbsRefine_CounterExample* abs = new AbsRefine_CounterExample(mgr, simp, at);
   ToSATAIG* tosat = new ToSATAIG(mgr, at);
 
-  GlobalSTP = new STP(mgr, simp, at, tosat, abs);
+  setGlobalSTP(new STP(mgr, simp, at, tosat, abs));
 
   srand(time(NULL));
-  stp::GlobalParserBM = &stp;
+  setGlobalParserBM(&stp);
 
   stp.UserFlags.disableSimplifications();
   stp.UserFlags.bitConstantProp_flag = true;

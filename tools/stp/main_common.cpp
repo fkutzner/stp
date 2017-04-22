@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "main_common.h"
 #include "extlib-abc/cnf_short.h"
+#include "stp/Util/Attributes.h"
 
 extern int smtparse(void*);
 extern int smt2parse();
@@ -35,9 +36,9 @@ extern void errorHandler(const char* error_msg);
 
 // Amount of memory to ask for at beginning of main.
 extern const intptr_t INITIAL_MEMORY_PREALLOCATION_SIZE;
-extern FILE* cvcin;
-extern FILE* smtin;
-extern FILE* smt2in;
+extern ATTR_STPAPI FILE* cvcin;
+extern ATTR_STPAPI FILE* smtin;
+extern ATTR_STPAPI FILE* smt2in;
 
 using namespace stp;
 using std::auto_ptr;
@@ -63,7 +64,7 @@ Main::Main() : onePrintBack(false)
   smt2in = NULL;
 
   // Register the error handler
-  vc_error_hdlr = errorHandler;
+  setVcErrorHdlr(errorHandler);
 
 #if !defined(__MINGW32__) && !defined(__MINGW64__) && !defined(_MSC_VER)
   // Grab some memory from the OS upfront to reduce system time when
@@ -75,7 +76,7 @@ Main::Main() : onePrintBack(false)
 #endif
 
   bm = new STPMgr();
-  GlobalParserBM = bm;
+  setGlobalParserBM(bm);
 }
 
 Main::~Main()
@@ -106,14 +107,14 @@ void Main::parse_file(ASTVec* AssertsQuery)
   // If you are converting formats, you probably don't want it simplifying
   if (onePrintBack)
   {
-    GlobalParserInterface = &piTypeCheckDefault;
+    setGlobalParserInterface(&piTypeCheckDefault);
   }
   else
   {
-    GlobalParserInterface = &piTypeCheckSimp;
+    setGlobalParserInterface(&piTypeCheckSimp);
   }
 
-  GlobalParserInterface->startup();
+  getGlobalParserInterface()->startup();
 
   if (onePrintBack)
   {
@@ -141,7 +142,7 @@ void Main::parse_file(ASTVec* AssertsQuery)
     cvcparse((void*)AssertsQuery);
     cvclex_destroy();
   }
-  GlobalParserInterface = NULL;
+  setGlobalParserInterface(NULL);
   if (toClose != NULL)
   {
     fclose(toClose);
@@ -286,7 +287,7 @@ int Main::main(int argc, char** argv)
   STP *stp = new STP(bm, simp.get(), arrayTransformer.get(), tosat.get(),
                       Ctr_Example.get());
 
-  GlobalSTP = stp;
+  setGlobalSTP(stp);
   // If we're not reading the file from stdin.
   if (!infile.empty())
     read_file();
@@ -299,7 +300,7 @@ int Main::main(int argc, char** argv)
   parse_file(AssertsQuery);
   bm->GetRunTimes()->stop(RunTimes::Parsing);
 
-  GlobalSTP = NULL;
+  setGlobalSTP(NULL);
 
   /*  The SMTLIB2 has a command language. The parser calls all the functions,
    *  so when we get to here the parser has already called "exit". i.e. if the
@@ -337,7 +338,7 @@ int Main::main(int argc, char** argv)
   }
 
   // Previously we used fast-exit to avoid destroying lots of objects, for example in the node manager.
-  // We use auto_ptr now on lots of stuff, so there seems little difference in the time it takes to 
+  // We use auto_ptr now on lots of stuff, so there seems little difference in the time it takes to
   // exit normally vs. not.
   //if (bm->UserFlags.isSet("fast-exit", "0"))
   //  exit(0);

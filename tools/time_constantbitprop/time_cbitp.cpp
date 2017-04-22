@@ -164,7 +164,7 @@ int main(void)
 
   stp::Cpp_interface interface(*beev, beev->defaultNodeFactory);
   interface.startup();
-  stp::GlobalParserBM = beev;
+  setGlobalParserBM(beev);
 
   ostream& output = cerr;
 

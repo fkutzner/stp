@@ -29,7 +29,7 @@ THE SOFTWARE.
 
   Expressions are generated, then pairwise checked over a range of bit-widths
   to see if they are the same.
-  
+
   If they are the same, then C++ code can be written out that implements the rule.
 */
 
@@ -355,10 +355,11 @@ bool isConstant(
     {
       assert(symbols[i].GetValueWidth() == bit_width);
 
+      STP* globalSTP = getGlobalSTP();
       if (strncmp(symbols[i].GetName(), "v", 1) == 0)
-        vN = GlobalSTP->Ctr_Example->GetCounterExample(symbols[i]);
+        vN = globalSTP->Ctr_Example->GetCounterExample(symbols[i]);
       else if (strncmp(symbols[i].GetName(), "w", 1) == 0)
-        wN = GlobalSTP->Ctr_Example->GetCounterExample(symbols[i]);
+        wN = globalSTP->Ctr_Example->GetCounterExample(symbols[i]);
     }
 
     different.setValues(vN, wN);
@@ -757,7 +758,7 @@ void startup()
   }
 
   mgr = new stp::STPMgr();
-  stp::GlobalParserBM = mgr;
+  setGlobalParserBM(mgr);
 
 
   simp = new Simplifier(mgr);
@@ -765,7 +766,7 @@ void startup()
   AbsRefine_CounterExample* abs = new AbsRefine_CounterExample(mgr, simp, at);
   ToSATAIG* tosat = new ToSATAIG(mgr, at);
 
-  GlobalSTP = new STP(mgr, simp, at, tosat, abs);
+  setGlobalSTP(new STP(mgr, simp, at, tosat, abs));
 
   mgr->defaultNodeFactory =
       new SimplifyingNodeFactory(*mgr->hashingNodeFactory, *mgr);
@@ -803,9 +804,10 @@ void clearSAT()
   delete ss;
   ss = new MinisatCore;
 
-  delete GlobalSTP->tosat;
-  ToSATAIG* aig = new ToSATAIG(mgr, GlobalSTP->arrayTransformer);
-  GlobalSTP->tosat = aig;
+  STP* globalSTP = getGlobalSTP();
+  delete globalSTP->tosat;
+  ToSATAIG* aig = new ToSATAIG(mgr, globalSTP->arrayTransformer);
+  globalSTP->tosat = aig;
 }
 
 // Return true if the negation of the query is unsatisfiable.
@@ -813,7 +815,8 @@ bool isConstantToSat(const ASTNode& query, int64_t timeout_max_confl)
 {
   assert(query.GetType() == BOOLEAN_TYPE);
 
-  GlobalSTP->ClearAllTables();
+  STP* globalSTP = getGlobalSTP();
+  globalSTP->ClearAllTables();
   clearSAT();
 
   ASTNode query2 = nf->CreateNode(NOT, query);
@@ -821,8 +824,8 @@ bool isConstantToSat(const ASTNode& query, int64_t timeout_max_confl)
   assert(ss->nClauses() == 0);
   mgr->SetQuery(mgr->ASTUndefined);
   ss->setMaxConflicts(timeout_max_confl);
-  SOLVER_RETURN_TYPE r = GlobalSTP->Ctr_Example->CallSAT_ResultCheck(
-      *ss, query2, query2, GlobalSTP->tosat, false);
+  SOLVER_RETURN_TYPE r = globalSTP->Ctr_Example->CallSAT_ResultCheck(
+      *ss, query2, query2, globalSTP->tosat, false);
 
   return (r == SOLVER_VALID); // unsat, always true
 }
