@@ -55,12 +55,12 @@ before_install:
   - sudo add-apt-repository -y ppa:ubuntu-sdk-team/ppa
   - sudo add-apt-repository -y ppa:george-edison55/gcc4.7-precise
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository -y ppa:kalakris/cmake
+  - sudo add-apt-repository -y ppa:george-edison55/precise-backports
   - sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu trusty-backports main universe"
   - sudo apt-get update
 
 install:
-  - sudo apt-get install -y --force-yes cmake valgrind git zlib1g-dev
+  - sudo apt-get install -y --force-yes cmake-data cmake valgrind git zlib1g-dev
 #
 # get and install minisat
   - mkdir minisat_git && cd minisat_git
@@ -90,4 +90,3 @@ install:
 
 script:
   - if [ "$COVERITY_SCAN" != "1" ]; then ./scripts/travis-cmake.sh ; fi
-
