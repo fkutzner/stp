@@ -21,12 +21,18 @@ platform:
 #  - x86
 
 environment:
+  matrix:
+    - PYTHON: "C:\\Python36-x64"
+
   global:
     BOOST_ROOT: C:\projects\stp\boost_1_59_0_install
     MINISAT_ROOT: C:\projects\stp\minisat\myinstall
     ZLIB_ROOT: C:\projects\stp\zlib\myinstall
     BUILD_TYPE: Release
     MSBUILD_FLAGS: /maxcpucount /nologo
+
+  install:
+    "%PYTHON%\\python.exe -m pip install lit"
 
 configuration:
   - Release
@@ -88,7 +94,7 @@ build_script:
 
   # cygwin
   # - C:\cygwin64\setup-x86_64.exe -qnNdO -R C:/cygwin64 -s http://cygwin.mirror.constant.com -l C:/cygwin64/var/cache/setup -P autoconf -P automake -P bison -P gcc-core -P gcc-g++ -P mingw-runtime -P mingw-binutils -P mingw-gcc-core -P mingw-gcc-g++ -P mingw-pthreads -P mingw-w32api -P libtool -P make -P python -P gettext-devel -P gettext -P intltool -P libiconv -P pkg-config -P git -P wget -P curl
-  - C:\cygwin64\setup-x86_64.exe  -qnNd -R C:/cygwin64 --site http://cygwin.mirrors.pair.com/ -l C:/cygwin64/var/cache/setup --packages "flex,bison,perl,python"
+  - C:\cygwin64\setup-x86_64.exe  -qnNd -R C:/cygwin64 --site http://cygwin.mirrors.pair.com/ -l C:/cygwin64/var/cache/setup --packages "flex,bison,perl"
 
 
 
@@ -98,7 +104,7 @@ build_script:
   - mkdir build
   - cd build
   - cmake --version
-  - cmake -G %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DMINISAT_LIBDIR=%MINISAT_ROOT% -DMINISAT_INCLUDE_DIRS=%MINISAT_ROOT%\include -DCMAKE_PREFIX_PATH=C:\cygwin64 ..
+  - cmake -G %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DPYTHON_EXECUTABLE="%PYTHON%\\python.exe" -DPYTHON_LIB_INSTALL_DIR="%PYTHON%" -DLIT_TOOL="%PYTHON%\\Scripts\\lit-script.py" -DMINISAT_LIBDIR=%MINISAT_ROOT% -DMINISAT_INCLUDE_DIRS=%MINISAT_ROOT%\include -DCMAKE_PREFIX_PATH=C:\cygwin64 ..
   - msbuild %MSBUILD_FLAGS% INSTALL.vcxproj
 
 
