@@ -67,7 +67,7 @@ build_script:
   - cd llvm
   - mkdir build
   - cd build
-  - cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
+  - cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..
   - cmake --build . --config Release --target not
   - set PATH=%PATH%;%cd%\Release\bin
 
