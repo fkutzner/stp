@@ -26,7 +26,6 @@ environment:
     #BOOST_ROOT: C:\projects\stp\boost_1_59_0_install
     MINISAT_ROOT: C:\projects\stp\minisat\myinstall
     ZLIB_ROOT: C:\projects\stp\zlib\myinstall
-    BUILD_TYPE: Release
     MSBUILD_FLAGS: /maxcpucount /nologo
     PYTHON: "C:\\Python36-x64"
 
@@ -82,8 +81,8 @@ build_script:
   - mkdir myinstall
   - cd build
   - cmake -G %CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%ZLIB_ROOT% ..
-  - cmake --build . --config %BUILD_TYPE%
-  - cmake --build . --config %BUILD_TYPE% --target install
+  - cmake --build . --config %CONFIGURATION%
+  - cmake --build . --config %CONFIGURATION% --target install
   - dir ..\myinstall\
 
   # minisat
@@ -95,8 +94,8 @@ build_script:
   - mkdir myinstall
   - cd build
   - cmake -G %CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%MINISAT_ROOT% -DZLIB_ROOT=%ZLIB_ROOT% ..
-  - cmake --build . --config %BUILD_TYPE%
-  - cmake --build . --config %BUILD_TYPE% --target install
+  - cmake --build . --config %CONFIGURATION%
+  - cmake --build . --config %CONFIGURATION% --target install
   - dir ..\myinstall\
   - dir ..\myinstall\lib\
   - dir ..\myinstall\bin\
@@ -109,13 +108,15 @@ build_script:
   # finally STP
   - cd c:\projects\stp
   - git submodule update --init --recursive
+  # Building in c:\projects\stp\build fails with cmake --build since ASTKind.h
+  # cannot be found, so build it in ..\stp.build
   - mkdir ..\stp.build
   - cd ..\stp.build
   - cmake --version
-  - cmake -G %CMAKE_GENERATOR% -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DPYTHON_EXECUTABLE="%PYTHON%\\python.exe" -DPYTHON_LIB_INSTALL_DIR="%PYTHON%" -DLIT_TOOL="%PYTHON%\\Scripts\\lit.exe" -DMINISAT_LIBDIR=%MINISAT_ROOT% -DMINISAT_INCLUDE_DIRS=%MINISAT_ROOT%\include -DZLIB_ROOT=%ZLIB_ROOT% -DCMAKE_PREFIX_PATH=C:\cygwin64 ..\stp
-  - cmake --build . --config %BUILD_TYPE%
-  - cmake --build . --config %BUILD_TYPE% --target check
-  - cmake --build . --config %BUILD_TYPE% --target install
+  - cmake -G %CMAKE_GENERATOR% -DENABLE_TESTING=ON -DPYTHON_EXECUTABLE="%PYTHON%\\python.exe" -DPYTHON_LIB_INSTALL_DIR="%PYTHON%" -DLIT_TOOL="%PYTHON%\\Scripts\\lit.exe" -DMINISAT_LIBDIR=%MINISAT_ROOT% -DMINISAT_INCLUDE_DIRS=%MINISAT_ROOT%\include -DZLIB_ROOT=%ZLIB_ROOT% -DCMAKE_PREFIX_PATH=C:\cygwin64 ..\stp
+  - cmake --build . --config %CONFIGURATION%
+  - cmake --build . --config %CONFIGURATION% --target check
+  - cmake --build . --config %CONFIGURATION% --target install
 
 
 build:
@@ -126,7 +127,7 @@ build:
 
 # scripts to run after build
 after_build:
-  - 7z a c:\projects\stp\stp.zip %APPVEYOR_BUILD_FOLDER%\build -tzip
+  - 7z a c:\projects\stp\stp.zip %APPVEYOR_BUILD_FOLDER%\..\stp.build -tzip
   - cd c:\projects\stp
 
 artifacts:
