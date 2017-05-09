@@ -27,6 +27,7 @@ environment:
     ZLIB_ROOT: C:\projects\stp\zlib\myinstall
     MSBUILD_FLAGS: /maxcpucount /nologo
     PYTHON: "C:\\Python36-x64"
+    APPVEYOR_SAVE_CACHE_ON_ERROR: true
 
 install:
     "%PYTHON%\\python.exe -m pip install lit"
