@@ -35,8 +35,8 @@ configuration:
   - Release
 
 cache:
-  - llvm -> appveyor.yml
-  - llvm.build -> appveyor.yml
+  - C:\projects\stp\llvm -> appveyor.yml
+  - C:\projects\stp\llvm.build -> appveyor.yml
 
 build_script:
   - IF "%PLATFORM%" == "x86" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib32-msvc-14.0)
