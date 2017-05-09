@@ -35,7 +35,7 @@ configuration:
   - Release
 
 cache:
-  - llvm -> appveyor.yml
+  - llvm.build\Release -> appveyor.yml
 
 build_script:
   - IF "%PLATFORM%" == "x86" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib32-msvc-14.0)
@@ -54,15 +54,15 @@ build_script:
   # The STP query-file-tests require the "not" tool. For now, we use the one
   # provided by LLVM.
   - cd C:\projects\stp
-  - if exist llvm\build\Release\bin\not.exe goto finished_not_build
+  - if exist llvm.build\Release\bin\not.exe goto finished_not_build
   - git clone --depth=1 --branch release_40 https://github.com/llvm-mirror/llvm
-  - cd llvm
-  - mkdir build
-  - cd build
-  - cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..
+  - mkdir llvm.build
+  - cd llvm.build
+  - cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
   - cmake --build . --config Release --target not
+  -
   - :finished_not_build
-  - set PATH=%PATH%;C:\projects\stp\llvm\build\Release\bin
+  - set PATH=%PATH%;C:\projects\stp\llvm.build\Release\bin
 
   # zlib
   # TODO check out http://stackoverflow.com/questions/10507893/libzip-with-visual-studio-2010
