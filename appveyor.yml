@@ -56,12 +56,15 @@ build_script:
   - cd C:\projects\stp
   - if exist llvm.build\Release\bin\not.exe goto finished_not_build
   - git clone --depth=1 --branch release_40 https://github.com/llvm-mirror/llvm
-  - mkdir llvm.build
+  - if not exist llvm.build mkdir llvm.build
   - cd llvm.build
   - cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
   - cmake --build . --config Release --target not
   -
-  - :finished_not_build
+  # Beware: since this file uses unix newlines, there following line must
+  # be followed by a space or the build will fail with the message
+  # "The system cannot find the batch label specified".
+  - :finished_not_build 
   - set PATH=%PATH%;C:\projects\stp\llvm.build\Release\bin
 
   # zlib
