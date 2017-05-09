@@ -22,8 +22,7 @@ platform:
 
 environment:
   global:
-    # TODO: building STP with boost is not supported yet on Windows (the problem seems to be easily fixable: stp.pdb gets generated for stp.dll as well as stp.exe, which causes an error.)
-    #BOOST_ROOT: C:\projects\stp\boost_1_59_0_install
+    BOOST_ROOT: C:\projects\stp\boost_1_59_0_install
     MINISAT_ROOT: C:\projects\stp\minisat\myinstall
     ZLIB_ROOT: C:\projects\stp\zlib\myinstall
     MSBUILD_FLAGS: /maxcpucount /nologo
@@ -36,28 +35,28 @@ configuration:
   - Release
 
 build_script:
-  #- IF "%PLATFORM%" == "x86" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib32-msvc-14.0)
+  - IF "%PLATFORM%" == "x86" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib32-msvc-14.0)
   - IF "%PLATFORM%" == "x86" ( SET CMAKE_GENERATOR="Visual Studio 14 2015")
 
-  #- IF "%PLATFORM%" == "x64" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib64-msvc-14.0)
+  - IF "%PLATFORM%" == "x64" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib64-msvc-14.0)
   - IF "%PLATFORM%" == "x64" ( SET CMAKE_GENERATOR="Visual Studio 14 2015 Win64")
 
   - echo %PLATFORM%
-  #- echo %BOOST_LIBRARYDIR%
+  - echo %BOOST_LIBRARYDIR%
   - echo %CMAKE_GENERATOR%
   - echo %configuration%
   - echo %APPVEYOR_BUILD_FOLDER%
   - echo %cd%
 
   # boost
-  #- cd c:\projects\stp
-  #- mkdir boost_1_59_0_install
-  #- ps: . .\scripts\build\appveyor.ps1
-  #- cd boost_1_59_0
-  #- echo "Building boost.."
-  #- bootstrap.bat --with-libraries=program_options
-  #- cat project-config.jam
-  #- b2 --with-program_options address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=static install --prefix="C:\projects\stp\boost_1_59_0_install" > boost_install.out
+  - cd c:\projects\stp
+  - mkdir boost_1_59_0_install
+  - ps: . .\scripts\build\appveyor.ps1
+  - cd boost_1_59_0
+  - echo "Building boost.."
+  - bootstrap.bat --with-libraries=program_options
+  - cat project-config.jam
+  - b2 --with-program_options address-model=64 toolset=msvc-14.0 variant=release link=static threading=multi runtime-link=static install --prefix="C:\projects\stp\boost_1_59_0_install" > boost_install.out
 
   # The STP query-file-tests require the "not" tool. For now, we use the one
   # provided by LLVM.
