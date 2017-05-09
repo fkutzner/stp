@@ -35,7 +35,8 @@ configuration:
   - Release
 
 cache:
-  - llvm.build\Release -> appveyor.yml
+  - llvm -> appveyor.yml
+  - llvm.build -> appveyor.yml
 
 build_script:
   - IF "%PLATFORM%" == "x86" ( SET BOOST_LIBRARYDIR=C:/Libraries/boost_1_59_0/lib32-msvc-14.0)
@@ -54,18 +55,12 @@ build_script:
   # The STP query-file-tests require the "not" tool. For now, we use the one
   # provided by LLVM.
   - cd C:\projects\stp
-  - if exist llvm.build\Release\bin\not.exe goto finished_not_build
-  - git clone --depth=1 --branch release_40 https://github.com/llvm-mirror/llvm
+  - if not exist llvm git clone --depth=1 --branch release_40 https://github.com/llvm-mirror/llvm
   - if not exist llvm.build mkdir llvm.build
   - cd llvm.build
-  - cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
-  - cmake --build . --config Release --target not
-  -
-  # Beware: since this file uses unix newlines, there following line must
-  # be followed by a space or the build will fail with the message
-  # "The system cannot find the batch label specified".
-  - :finished_not_build 
-  - set PATH=%PATH%;C:\projects\stp\llvm.build\Release\bin
+  - if not exist Release\bin\not.exe CMakeLists.txt cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
+  - if not exist Release\bin\not.exe cmake --build . --config Release --target not
+  - set PATH=%PATH%;%cd%\Release\bin
 
   # zlib
   # TODO check out http://stackoverflow.com/questions/10507893/libzip-with-visual-studio-2010
