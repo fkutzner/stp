@@ -58,7 +58,7 @@ build_script:
   - if not exist llvm git clone --depth=1 --branch release_40 https://github.com/llvm-mirror/llvm
   - if not exist llvm.build mkdir llvm.build
   - cd llvm.build
-  - if not exist Release\bin\not.exe CMakeLists.txt cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
+  - if not exist Release\bin\not.exe cmake -G %CMAKE_GENERATOR% -DPYTHON_EXECUTABLE=%PYTHON%\python.exe ..\llvm
   - if not exist Release\bin\not.exe cmake --build . --config Release --target not
   - set PATH=%PATH%;%cd%\Release\bin
 
